@@ -1,11 +1,13 @@
 #导入pandas库，解析csv。
 import pandas as pd
+from pathlib import Path
 
 #设置pandas库显示dataframe
 pd.set_option('display.max_columns', None) #显示最大列数
-pd.set_option('display.max.rows', None) #显示最大行数
+pd.set_option('display.max_rows', None) #显示最大行数
 pd.set_option('display.float_format','{:.0f}'.format) #关闭科学计数法
-original_data = pd.read_csv("/Users/dongdelin/作业/数据分析师薪资实战/ds_salaries.csv")
+data_path = Path(__file__).with_name("ds_salaries.csv")
+original_data = pd.read_csv(data_path)
 original_data.head()
 
 #评估数据
@@ -18,7 +20,9 @@ original_data.describe() #求某一列的计算
 
 #清洗数据
 cleaned_data = original_data.copy() #创建一个与原始dataframe相同的dataframe
-cleaned_data["work_year"] = pd.to_datetime(cleaned_data["work_year"]) #将入职年份改改为日期时间数据类型
+cleaned_data["work_year"] = pd.to_datetime(
+    cleaned_data["work_year"].astype(str), format="%Y", errors="coerce"
+) #将入职年份改为正确的年份日期类型（按年解析）
 cleaned_data["salary_in_usd"] = cleaned_data["salary_in_usd"].astype(str) #将数据类型改为字符串
 cleaned_data.info()
 cleaned_data = cleaned_data.dropna(subset = ["salary"]) #删除salary列的缺失值
